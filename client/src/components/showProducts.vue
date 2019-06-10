@@ -6,6 +6,7 @@
 
         <v-layout row wrap>
 
+            <!-- Products -->
             <v-flex xs12 sm12 md9>
 
                 <v-card class="card--flex-toolbar">
@@ -69,6 +70,7 @@
                                 <template v-slot:activator="{ on }">
                                 <v-btn
                                 v-on="on"
+                                @click="dialogProducts = true"
                                 icon
                                 color="primary"
                                 dark
@@ -128,8 +130,125 @@
                 </v-card>
 
             </v-flex>
-    
 
+            <!-- Dialog with info about the product -->
+            <v-dialog
+            v-model="dialogProducts"
+            width="500">
+    
+                <v-card class="form">
+
+                    <v-card-title
+                    class="form-title"
+                    primary-title>
+                    More about the product
+                    </v-card-title>
+
+                    <v-card-text>
+                        <div id="informations">Hi, I'm empty. Check database.</div>
+                    </v-card-text>
+
+                    <v-divider>
+
+                    </v-divider>
+
+                    <v-card-actions>
+          
+                        <v-text-field
+                        v-model="addproducts"
+                        label="Type quantity here."
+                        clearable
+                        :rules="[rules.numbers]">
+                        </v-text-field>
+
+                        <v-tooltip top>
+                        <template v-slot:activator="{ on }">
+                        <v-btn
+                        v-on="on"
+                        icon
+                        color="primary"
+                        dark
+                        round>
+                            <font-awesome-icon class="icons2" icon="plus" />
+                        </v-btn>
+                        </template>
+                        <span>
+                        Add
+                        </span>
+                        </v-tooltip>
+                  
+                        <v-tooltip top>
+                        <template v-slot:activator="{ on }"><v-btn
+                        v-on="on"
+                        icon
+                        color="primary"
+                        dark
+                        round
+                        @click="dialogProducts = false">
+                            <font-awesome-icon class="icons2" icon="times" />
+                        </v-btn>
+                        </template>
+                        <span>
+                        Close
+                        </span>
+                        </v-tooltip>
+
+                    </v-card-actions>
+
+                </v-card>
+
+            </v-dialog>
+
+            <!-- Dialog with the payment methods -->
+            <v-dialog
+            v-model="dialogCart"
+            width="500">
+      
+                <v-card>
+
+                    <v-card-title
+                    class="headline grey lighten-2"
+                    primary-title>
+                    Payment
+                    </v-card-title>
+
+                    <v-card-text>
+                    There will be payment methods implemented.
+                    </v-card-text>
+
+                    <v-divider>
+
+                    </v-divider>
+
+                    <v-card-actions>
+
+                        <v-spacer>
+
+                        </v-spacer>
+
+                        <v-tooltip top>
+                        <template v-slot:activator="{ on }"><v-btn
+                        v-on="on"
+                        icon
+                        color="primary"
+                        dark
+                        round
+                        @click="dialogCart = false">
+                          <font-awesome-icon class="icons2" icon="times" />
+                        </v-btn>
+                        </template>
+                        <span>
+                        Close
+                        </span>
+                        </v-tooltip>
+                    
+                    </v-card-actions>
+
+                </v-card>
+
+            </v-dialog>
+    
+            <!-- Shopping Cart -->
             <v-flex xs12 sm12 md3>
 
                 <v-card class="card--flex-toolbar">
@@ -165,6 +284,7 @@
                             <template v-slot:activator="{ on }">
                             <v-btn
                             v-on="on"
+                            @click="dialogCart = true"
                             icon
                             color="primary"
                             dark>
@@ -217,6 +337,8 @@ export default {
     data() {
         return {
             search: '',
+            dialogProducts: false,
+            dialogCart: false,
             products: [],
             headersOfProducts:
             [
