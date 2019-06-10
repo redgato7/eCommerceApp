@@ -1,4 +1,5 @@
 # Front-end task: eCommerce products
+Node.js 8 or greater is required.
 
 __client:__
 
