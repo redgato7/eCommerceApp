@@ -7,9 +7,9 @@
         <v-layout row wrap>
 
             <!-- Products -->
-            <v-flex xs12 sm12 md9>
+            <v-flex xs12 sm12 md12 lg9>
 
-                <v-card class="card--flex-toolbar">
+                <v-card>
 
                     <v-toolbar color="#42A5F5" dark card prominent>
 
@@ -46,7 +46,7 @@
                         <template v-slot:items="props">
 
                             <td>
-                                <img :src= "props.item.images.primary.large" />
+                                <img class="img-main" :src= "props.item.images.primary.large" />
                             </td>
 
                             <td class="text-xs-left">
@@ -63,19 +63,21 @@
                                 v-model="addproducts"
                                 label="Type quantity here."
                                 clearable
-                                :rules="[rules.numbers]">
+                                :rules="[rules.numbers]"
+                                maxlength="2">
                                 </v-text-field>
 
                                 <v-tooltip bottom>
                                 <template v-slot:activator="{ on }">
                                 <v-btn
                                 v-on="on"
-                                @click="dialogProducts = true"
+                                @click.stop="dialogProducts = true"
+                                @click="getTheSelectedOne(props.item); getTheButton(props.item)"
                                 icon
                                 color="primary"
                                 dark
                                 round>
-                                    <font-awesome-icon class="icons2" icon="info" />
+                                    <font-awesome-icon icon="info" />
                                 </v-btn>
                                 </template>
                                 <span>
@@ -88,10 +90,11 @@
                                 <v-btn
                                 icon
                                 v-on="on"
+                                @click="pushProduct(props.item)"
                                 color="primary"
                                 dark
                                 round>
-                                    <font-awesome-icon class="icons2" icon="plus" />
+                                    <font-awesome-icon icon="plus" />
                                 </v-btn>
                                 </template>
                                 <span>
@@ -158,18 +161,20 @@
                         v-model="addproducts"
                         label="Type quantity here."
                         clearable
-                        :rules="[rules.numbers]">
+                        :rules="[rules.numbers]"
+                        maxlength="2">
                         </v-text-field>
 
                         <v-tooltip top>
                         <template v-slot:activator="{ on }">
                         <v-btn
                         v-on="on"
+                        @click="addFromTheButton()"
                         icon
                         color="primary"
                         dark
                         round>
-                            <font-awesome-icon class="icons2" icon="plus" />
+                            <font-awesome-icon icon="plus" />
                         </v-btn>
                         </template>
                         <span>
@@ -185,7 +190,7 @@
                         dark
                         round
                         @click="dialogProducts = false">
-                            <font-awesome-icon class="icons2" icon="times" />
+                            <font-awesome-icon icon="times" />
                         </v-btn>
                         </template>
                         <span>
@@ -204,10 +209,10 @@
             v-model="dialogCart"
             width="500">
       
-                <v-card>
+                <v-card class="form">
 
                     <v-card-title
-                    class="headline grey lighten-2"
+                    class="form-title"
                     primary-title>
                     Payment
                     </v-card-title>
@@ -234,7 +239,7 @@
                         dark
                         round
                         @click="dialogCart = false">
-                          <font-awesome-icon class="icons2" icon="times" />
+                          <font-awesome-icon icon="times" />
                         </v-btn>
                         </template>
                         <span>
@@ -249,9 +254,9 @@
             </v-dialog>
     
             <!-- Shopping Cart -->
-            <v-flex xs12 sm12 md3>
+            <v-flex xs12 sm12 md12 lg3>
 
-                <v-card class="card--flex-toolbar">
+                <v-card>
 
                     <v-toolbar color="#42A5F5" dark card prominent>
 
@@ -269,10 +274,11 @@
                             <template v-slot:activator="{ on }">
                             <v-btn
                             v-on="on"
+                            @click="clearCart()"
                             icon
                             color="primary"
                             dark>
-                                <font-awesome-icon class="icons2" icon="trash-alt" />
+                                <font-awesome-icon icon="trash-alt" />
                             </v-btn>
                             </template>
                             <span>
@@ -288,7 +294,7 @@
                             icon
                             color="primary"
                             dark>
-                                <font-awesome-icon class="icons2" icon="money-bill-alt" />
+                                <font-awesome-icon icon="money-bill-alt" />
                             </v-btn>
                             </template>
                             <span>
@@ -336,10 +342,12 @@
 export default {
     data() {
         return {
-            search: '',
+            search: "",
             dialogProducts: false,
             dialogCart: false,
             products: [],
+            checkedProducts: [],
+            moreProducts: [],
             headersOfProducts:
             [
                 {
@@ -356,6 +364,17 @@ export default {
                 value: 'general.name'
                 }
             ],
+            headersCart:
+            [
+                { 
+                text: 'ID',
+                value: 'id'
+                },
+                { 
+                text: 'Name',
+                value: 'general.name'
+                }
+            ],
             rules:
             {
                 numbers: value => 
@@ -366,10 +385,48 @@ export default {
             }
         }
     },
+    methods: {
+        pushProduct(product) {
+            for (let i = 0 ; i < this.addproducts ; i++) {
+                this.checkedProducts.push(product);
+            }
+            let parsed = JSON.stringify(this.checkedProducts);
+            localStorage.setItem('checkedProducts', parsed);
+            this.addproducts='';
+        },
+        clearCart() {
+          this.checkedProducts = [];
+          let parsed = JSON.stringify(this.checkedProducts);
+          localStorage.setItem('checkedProducts', parsed);
+        },
+        reloadPage() {
+            window.location.reload();
+        },
+        getTheSelectedOne (product) {
+            /* eslint-disable */
+            document.getElementById("informations").innerHTML = 
+            `<h3>${product.id}, ${product.general.name}</br>
+            ${product.brand.name}</h3></br>
+            ${product.general.description}</br>
+            <img src=\"${product.images.primary.large}"\ max-width=\"300px\" height=\"300px\"></br>`;
+            /* eslint-disable */
+        },
+        getTheButton (product) {
+            this.moreProducts = product;
+        },
+        addFromTheButton() {
+            this.pushProduct (this.moreProducts);
+        }
+    },
     created() {
         this.$http.get('http://localhost:3005/products').then(function(data){
-            this.products = data.body
+            this.products = data.body;
         })
+    },
+    mounted() {
+        if  (localStorage.getItem('checkedProducts')) {
+            this.checkedProducts = JSON.parse(localStorage.getItem('checkedProducts'));
+        }
     }
 }
 
